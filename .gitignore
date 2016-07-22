@@ -1,6 +1,5 @@
 *~
 *.out
-*.dat
 *.txt
 \#*
 build/

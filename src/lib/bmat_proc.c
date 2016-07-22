@@ -55,7 +55,8 @@ void bmat_rl(bmat src, uint32_t *pt)
                if (bmat_get(src, i, j)) {
                     k=j+1;
                     pt[l] = CNTR_PT_PACK(i, j);
-                    while (bmat_get(src, i, k++));
+                    while (bmat_get(src, i, k)
+	 	         k++;
                     pt[l++] = CNTR_PT_PACK(i, k-2);
                     j=k;
                }
