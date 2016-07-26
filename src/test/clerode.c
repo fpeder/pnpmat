@@ -8,14 +8,14 @@ static char *kfile = "./build/erode_kernel.cl";
 static char *func[] = {"erode_smem3", "erode_smem5", "erode_smem7"};
 
 int niter=1, ksize=0, verbose=0;
-char *fname = NULL;
+char *fname=NULL, *outfile=NULL;
 int count;
 
 void parse_args(int argc, char **argv)
 {
      extern char *optarg;
      int c, err=0;
-     while ((c = getopt(argc, argv, "i:k:n:vt")) != -1) {
+     while ((c = getopt(argc, argv, "i:k:n:s:vt")) != -1) {
           switch (c) {
           case 'i': fname = optarg; break;
           case 'k': ksize = atoi(optarg); break;
@@ -24,7 +24,7 @@ void parse_args(int argc, char **argv)
           case '?': err = 1; break;
           }
      }
-     if (!fname || !ksize) {
+     if (!fname || !ksize || err) {
           fprintf(stderr, usage, argv[0]);
           exit(-1);
      }
@@ -56,7 +56,6 @@ int main(int argc, char **argv)
 
      if (verbose) bmat_print(dst);
      bmat_write(dst, "e3.dat");
-     
      bmat_free(src);
      bmat_free(dst);
      return 0;

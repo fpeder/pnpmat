@@ -53,12 +53,12 @@ void bmat_rl(bmat src, uint32_t *pt)
      for (int i=0; i<src.M; i++) {
           for (int j=0; j<src.N; j++) {
                if (bmat_get(src, i, j)) {
-                    k=j+1;
-                    pt[l] = CNTR_PT_PACK(i, j);
-                    while (bmat_get(src, i, k)
-	 	         k++;
-                    pt[l++] = CNTR_PT_PACK(i, k-2);
-                    j=k;
+                    pt[l++] = CNTR_PT_PACK(i, j);
+                    k = j+1;
+                    while (bmat_get(src, i, k))
+                         k++;
+                    pt[l++] = CNTR_PT_PACK(i, k-1);
+                    j = k;
                }
           }
      }
@@ -66,7 +66,6 @@ void bmat_rl(bmat src, uint32_t *pt)
 }
 
 //------------------------------------------------------------------------------
-
 void bmat_moore(bmat mat, int *count, uint32_t *contour)
 {
      const int8_t di[] = {0,  +1, +1, +1,  0, -1, -1, -1};

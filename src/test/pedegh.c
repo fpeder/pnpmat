@@ -5,19 +5,20 @@
 
 #define NTIMES 1
 
-const char usage[] = "usage: %s -i img [-v]\n";
+const char usage[] = "usage: %s -i img [-s out] [-v]\n";
 int verbose = 0;
-char *fname = NULL;
+char *fname=NULL, *outfile=NULL;
 
 void parse_args(int argc, char **argv)
 {
      extern char *optarg;
      int c, err=0;
-     while ((c = getopt(argc, argv, "i:v")) != -1) {
+     while ((c = getopt(argc, argv, "i:s:v")) != -1) {
           switch (c) {
           case 'i': fname = optarg; break;
           case 'v': verbose = 1; break;
-          case '?': err =1;
+          case 's': outfile = optarg; break;
+          case '?': err = 1;
           }
      }
      if (!fname || err) {
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
      TIME_NORM_PRINT(NTIMES, count, src.size); NL;
 
      if (verbose) pnpmat_print(dst);
-     pnpmat_write(dst, "gh4.dat");
+     if (outfile) pnpmat_write(dst, outfile);
      pnpmat_free(src);
      pnpmat_free(dst);
      return 0;

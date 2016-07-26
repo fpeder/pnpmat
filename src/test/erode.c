@@ -7,27 +7,30 @@
 
 #define NTIMES 10
 
-static char usage[] = "usage: %s -i img -k size [-n iter] [-v]\n";
+const char usage[] = "usage: %s -i img -k size [-n iter] [-v] [-s out]\n";
 
-int niter = 1;
-int ksize = 0;
-int verbose = 0;
-char *fname = NULL;
+int niter=1;
+int ksize=0;
+int verbose=0;
+int save=0;
+char *fname=NULL;
+char *outfile=NULL;
 
 
 void parse_args(int argc, char **argv)
 {
      extern char *optarg; int c, err=0;
-     while ((c = getopt(argc, argv, "i:k:n:v")) != -1) {
+     while ((c = getopt(argc, argv, "i:k:n:v:s:")) != -1) {
           switch (c) {
           case 'i': fname = optarg; break;
           case 'k': ksize = atoi(optarg); break;
           case 'n': niter = atoi(optarg); break;
           case 'v': verbose = 1; break;
+          case 's': outfile = optarg; break;
           case '?': err = 1; break;
           }
      }
-     if (!fname || !ksize) {
+     if (!fname || !ksize || err) {
           fprintf(stderr, usage, argv[0]);
           exit(-1);
      }
@@ -50,10 +53,10 @@ int main(int argc, char **argv)
           }
      }
      TIME_STOP;
-     TIME_NORM_PRINT(NTIMES, count, src.M * src.N); NL;
+     TIME_NORM_PRINT(NTIMES, count, src.size); NL;
 
      if (verbose) bmat_print(dst);
-     bmat_write(dst, "e1.dat");
+     if (outfile) bmat_write(dst, outfile);
      bmat_free(src);
      bmat_free(dst);
      return 0;

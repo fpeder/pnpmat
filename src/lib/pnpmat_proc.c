@@ -38,10 +38,6 @@ pnpmat pnpmat_dilate(pnpmat mat, const int ksize)
 #define MASK32(s,e) ((0xFFFFFFFF << (31-(e)+(s))) >> (s));
 #define MASK64(s,e) ((0xFFFFFFFFFFFFFFFF << (63-(e)+(s))) >> (s));
 
-
-void split_hi(uint64_t v, int s, int e);
-void split_lo(uint64_t v, int s, int e);
-
 #define OFF 64
 static int off=0;
 static int id=0;
@@ -49,15 +45,16 @@ static int rl=0;
 static int16_t ss[RL_MAX_ROW];
 static int16_t se[RL_MAX_ROW];
 
+void split_hi(uint64_t v, int s, int e);
+void split_lo(uint64_t v, int s, int e);
+
 void split_lo(uint64_t v, int s, int e)
 {
      uint64_t mask = MASK64(s, e);
      uint64_t tmp = v & mask;
      if (!tmp) return;
      if (tmp == mask) {
-          ss[id] = s+off;
-          se[id] = e+off;
-          id++;
+          ss[id]=s+off; se[id]=e+off; id++;
           return;
      }
      else {
@@ -72,9 +69,7 @@ void split_hi(uint64_t v, int s, int e)
      uint64_t tmp = v & mask;
      if (!tmp) return;
      if (tmp == mask) {
-          ss[id] = s+off;
-          se[id] = e+off;
-          id++;
+          ss[id] = s+off; se[id] = e+off; id++;
           return;
      }
      else {
@@ -91,12 +86,10 @@ void sub_print(int8_t *v)
 
 void merge(int r, uint32_t *pt)
 {
-     //int s, e;
      for (int i=0; se[i]!=-1; i++) {
-          //s=ss[i];
-          pt[rl] = CNTR_PT_PACK(r, ss[i]);
-          while(ss[i+1] == se[i]+1) i++;
-          //printf("%d,%d\n",r,se[i]);
+          pt[rl++] = CNTR_PT_PACK(r, ss[i]);
+          while(ss[i+1] == se[i]+1)
+               i++;
           pt[rl++] = CNTR_PT_PACK(r, se[i]);
      }
 }
@@ -104,7 +97,7 @@ void merge(int r, uint32_t *pt)
 void pnpmat_rl(pnpmat src, uint32_t *pt)
 {
      uint64_t v;
-     id=0;off=0;
+     //id=0; off=0;
      for (int i=0; i<src.M; i++) {
           for (int j=0; j<src.N_; j++) {
                v = src.data[i*src.N_ + j];
@@ -121,15 +114,15 @@ void pnpmat_rl(pnpmat src, uint32_t *pt)
 void pnpmat_moore(pnpmat src, int *count, uint32_t *contour)
 {
      const uint8_t map[] = {4, 5, 6, 7, 0, 1, 2, 3};
-     const int8_t di[]  = {0,  +1, +1, +1,  0, -1, -1, -1};
-     const int8_t dj[]  = {-1, -1,  0, +1, +1, +1,  0, -1};
+     const int8_t di[] = {0,  +1, +1, +1,  0, -1, -1, -1};
+     const int8_t dj[] = {-1, -1,  0, +1, +1, +1,  0, -1};
      int i, j, k=0;
      uint32_t start, end=0;
      uint8_t prev=0, next, pos, neigh;
      //bmat dst = bmat_zeros(src.M, src.N);
 
-     pnpmat_foreach(src, &i, &j);
-     start = CNTR_PT_PACK(i, j); //i*src.N + j;
+     pnpmat_foreach(src, &i, &j); // find the first
+     start = CNTR_PT_PACK(i, j);
      while (start != end) {
           neigh = pnpmat_get_neigh(src, i, j);
           /* __asm__("mov %2,%%cl; rorb %%cl,%0" */
@@ -142,7 +135,7 @@ void pnpmat_moore(pnpmat src, int *count, uint32_t *contour)
           i += di[next]; j += dj[next];
           //bmat_set(dst, i, j);
           //bmat_print(dst); getchar();
-          end = CNTR_PT_PACK(i, j); //i*src.N + j;
+          end = CNTR_PT_PACK(i, j);
           contour[k++] = end;
           prev = map[next];
           (*count)++;
