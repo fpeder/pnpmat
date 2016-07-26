@@ -2,8 +2,9 @@
 #include <unistd.h>
 
 #include "auz.h"
+#include "clutil.h"
 
-static char *usage = "usage: %s -i img -k size [-n iter] [-v]\n";
+const char *usage = "usage: %s -i img -k size [-n iter] [-v]\n";
 static char *kfile = "./build/erode_kernel.cl";
 static char *func[] = {"erode_smem3", "erode_smem5", "erode_smem7"};
 

@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "auz.h"
+#include "clutil.h"
 
 void usage(char *prog)
 {
